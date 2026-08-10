@@ -250,6 +250,11 @@ input {
     color: var(--terracotta);
 }
 
+.main-nav a.active {
+    color: var(--terracotta);
+    font-weight: 700;
+}
+
 .header-actions {
     margin-left: auto;
 

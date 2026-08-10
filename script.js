@@ -13,12 +13,10 @@ if (searchForm) {
         }
 
         /*
-         * Marketplace page will eventually receive
-         * this search query.
-         *
-         * For now, show a simple prototype response.
+         * Redirect to shop page with search query.
+         * The marketplace page will eventually filter by this.
          */
-        alert(`Searching for: ${query}`);
+        window.location.href = "shop.html";
     });
 }
 
@@ -37,8 +35,25 @@ function updateCartCount() {
 
 function addToCart() {
     cartCount++;
-
     updateCartCount();
+}
+
+
+/* ==================== ADD TO CART (product detail) ==================== */
+
+const addToCartBtn = document.querySelector(".add-to-cart");
+
+if (addToCartBtn) {
+    addToCartBtn.addEventListener("click", function () {
+        addToCart();
+        addToCartBtn.textContent = "Added to Cart ✓";
+        addToCartBtn.style.background = "var(--green)";
+
+        setTimeout(function () {
+            addToCartBtn.textContent = "Add to Cart";
+            addToCartBtn.style.background = "";
+        }, 1800);
+    });
 }
 
 
@@ -51,15 +66,20 @@ productButtons.forEach(function (button) {
 
     button.addEventListener("click", function (event) {
 
+        /*
+         * If this is an anchor tag it should navigate to the
+         * product page — don't intercept it.
+         */
+        if (button.tagName.toLowerCase() === "a") {
+            return; // allow normal navigation
+        }
+
         event.preventDefault();
 
         /*
-         * For now this simulates adding a product.
-         *
-         * Later this button will navigate to
-         * the Product Details page.
+         * For actual <button> elements (e.g. add-to-cart),
+         * simulate adding a product.
          */
-
         addToCart();
 
         button.textContent = "Added to Cart";
@@ -96,6 +116,7 @@ internalLinks.forEach(function (link) {
 /* ==================== INITIAL STATE ==================== */
 
 updateCartCount();
+
 
 const categoryPills =
     document.querySelectorAll(".category-pill");
