@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Storefront - Artisan</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="../../index.html" class="brand">
+                <span class="brand-mark">A</span>
+                <span class="brand-name">Artisan</span>
+            </a>
+            <nav class="main-nav">
+                <a href="marketplace.html" class="nav-link">Explore</a>
+            </nav>
+        </div>
+    </header>
+    <main class="section">
+        <div class="container">
+            <div id="storeHeader" class="metric-card" style="margin-bottom: 40px;">
+                <!-- Header rendered dynamically -->
+            </div>
+            <h3 style="margin-bottom: 20px;">Products by this Maker</h3>
+            <div class="product-preview-grid" id="sellerProductsGrid">
+                <!-- Products rendered dynamically -->
+            </div>
+        </div>
+    </main>
+    <script src="../../js/core/utils.js"></script>
+    <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
+    <script src="../../js/data/data-service.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const sellerId = params.get("id");
+            
+            const seller = DataService.getSellerById(sellerId);
+            const headerContainer = document.getElementById("storeHeader");
+            const productsGrid = document.getElementById("sellerProductsGrid");
+            if (!seller) {
+                headerContainer.innerHTML = `<h2>Seller Storefront Not Found</h2>`;
+                return;
+            }
+            headerContainer.innerHTML = `
+                <span class="eyebrow">${escapeHTML(seller.city || "Local Maker")}</span>
+                <h1 style="font-size: 2.2rem; margin-top: 6px;">${escapeHTML(seller.storeName)}</h1>
+                <p style="margin-top: 10px; max-width: 600px;">${escapeHTML(seller.bio)}</p>
+            `;
+            const products = DataService.getProductsBySeller(sellerId);
+            if (products.length === 0) {
+                productsGrid.innerHTML = `<p style="grid-column: 1 / -1;">This maker currently has no active product listings.</p>`;
+                return;
+            }
+            productsGrid.innerHTML = products.map(product => `
+                <article class="preview-product-card">
+                    <div class="preview-product-image">
+                        <span class="product-category">${escapeHTML(product.category)}</span>
+                    </div>
+                    <div class="preview-product-info">
+                        <h3>${escapeHTML(product.name)}</h3>
+                        <strong>${formatCurrency(product.price)}</strong>
+                        <div style="margin-top: 14px;">
+                            <a href="product.html?id=${product.id}" class="btn btn-secondary" style="font-size: 0.8rem; width: 100%;">View Item</a>
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+        });
+    </script>
+</body>
+</html>

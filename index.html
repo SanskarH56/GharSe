@@ -633,11 +633,39 @@
     </footer>
 
 
-        <script src="js/core/utils.js"></script>
-        <script src="js/data/storage.js"></script>
-        <script src="js/data/seed-loader.js"></script>
-        <script src="js/data/data-service.js"></script>
-        <script src="js/core/app.js"></script>
+            <script src="js/core/utils.js"></script>
+            <script src="js/data/storage.js"></script>
+            <script src="js/auth/session.js"></script>
+            <script src="js/auth/auth.js"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const user = SessionManager.getUser();
+                    if (user) {
+                        const navLogin = document.getElementById("navLogin");
+                        const navSignup = document.getElementById("navSignup");
+
+                        if (user.role === "seller") {
+                            if (navLogin) {
+                                navLogin.textContent = "Dashboard";
+                                navLogin.href = "pages/seller/dashboard.html";
+                            }
+                            if (navSignup) {
+                                navSignup.textContent = "My Products";
+                                navSignup.href = "pages/seller/products.html";
+                            }
+                        } else {
+                            if (navLogin) {
+                                navLogin.textContent = "My Orders";
+                                navLogin.href = "pages/buyer/orders.html";
+                            }
+                            if (navSignup) {
+                                navSignup.textContent = "Profile";
+                                navSignup.href = "pages/buyer/profile.html";
+                            }
+                        }
+                    }
+                });
+            </script>
 
 </body>
 </html>

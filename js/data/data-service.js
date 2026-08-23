@@ -159,3 +159,50 @@ const DataService = {
         return orderItems.filter(item => item.sellerId === sellerId);
     }
 };
+
+/**
+ * ARTISAN MARKETPLACE
+ * Extended Data Service Abstraction Layer
+ */
+
+// Add/ensure these methods exist in DataService object:
+DataService.getOrdersByBuyer = function(buyerId) {
+    const orders = StorageEngine.get("artisan_orders", []);
+    return orders.filter(o => o.buyerId === buyerId);
+};
+
+DataService.getOrdersBySeller = function(sellerId) {
+    const orderItems = StorageEngine.get("artisan_order_items", []);
+    const sellerItems = orderItems.filter(item => item.sellerId === sellerId);
+    const orderIds = [...new Set(sellerItems.map(item => item.orderId))];
+    const orders = StorageEngine.get("artisan_orders", []);
+    return orders.filter(o => orderIds.includes(o.id));
+};
+
+DataService.getSellerByUserId = function(userId) {
+    const sellers = StorageEngine.get("artisan_seller_profiles", []);
+    return sellers.find(s => s.userId === userId);
+};
+
+DataService.getBuyerByUserId = function(userId) {
+    const buyers = StorageEngine.get("artisan_buyer_profiles", []);
+    return buyers.find(b => b.userId === userId);
+};
+
+DataService.createProduct = function(productData) {
+    const products = StorageEngine.get("artisan_products", []);
+    const newProduct = {
+        id: generateId("prd"),
+        ...productData,
+        createdAt: new Date().toISOString()
+    };
+    products.push(newProduct);
+    StorageEngine.set("artisan_products", products);
+    return newProduct;
+};
+
+DataService.deleteProduct = function(productId) {
+    let products = StorageEngine.get("artisan_products", []);
+    products = products.filter(p => p.id !== productId);
+    StorageEngine.set("artisan_products", products);
+};

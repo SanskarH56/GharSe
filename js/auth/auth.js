@@ -1,13 +1,21 @@
 /**
  * ARTISAN MARKETPLACE
- * Authentication Controller
+ * Authentication Controller (Path-Aware)
  */
 
 const AuthController = {
 
     /**
-     * Authenticate user with email and password.
+     * Determines path prefix depending on current page location.
      */
+    getRelativePrefix() {
+        const path = window.location.pathname;
+        if (path.includes("/pages/auth/") || path.includes("/pages/seller/") || path.includes("/pages/buyer/") || path.includes("/pages/marketplace/")) {
+            return "../";
+        }
+        return "pages/";
+    },
+
     login(email, password) {
         const users = StorageEngine.get("artisan_users", []);
         const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
@@ -16,7 +24,6 @@ const AuthController = {
             return { success: false, message: "No account found with this email." };
         }
 
-        // Demo password validation (accepts matching or demo fallback)
         if (user.password && user.password !== password) {
             return { success: false, message: "Invalid password." };
         }
@@ -25,9 +32,6 @@ const AuthController = {
         return { success: true, user };
     },
 
-    /**
-     * Register a new user (Buyer or Seller).
-     */
     signup(userData, profileData = {}) {
         const users = StorageEngine.get("artisan_users", []);
         
@@ -40,7 +44,7 @@ const AuthController = {
             id: userId,
             email: userData.email,
             password: userData.password,
-            role: userData.role, // 'buyer' or 'seller'
+            role: userData.role,
             name: userData.name,
             createdAt: new Date().toISOString()
         };
@@ -48,7 +52,6 @@ const AuthController = {
         users.push(newUser);
         StorageEngine.set("artisan_users", users);
 
-        // Create corresponding role profile
         if (userData.role === "seller") {
             const sellers = StorageEngine.get("artisan_seller_profiles", []);
             sellers.push({
@@ -73,22 +76,35 @@ const AuthController = {
         return { success: true, user: newUser };
     },
 
-    /**
-     * Logout active session and redirect to home.
-     */
     logout() {
         SessionManager.clearUser();
-        window.location.href = "/index.html";
+        const path = window.location.pathname;
+        if (path.includes("/pages/")) {
+            window.location.href = "../../index.html";
+        } else {
+            window.location.href = "index.html";
+        }
     },
 
-    /**
-     * Redirect user based on their active role.
-     */
     redirectByRole(user) {
+        const path = window.location.pathname;
+        
         if (user.role === "seller") {
-            window.location.href = "/pages/seller/dashboard.html";
+            if (path.includes("/pages/auth/")) {
+                window.location.href = "../seller/dashboard.html";
+            } else if (!path.includes("/pages/")) {
+                window.location.href = "pages/seller/dashboard.html";
+            } else {
+                window.location.href = "../seller/dashboard.html";
+            }
         } else {
-            window.location.href = "/pages/marketplace/marketplace.html";
+            if (path.includes("/pages/auth/")) {
+                window.location.href = "../marketplace/marketplace.html";
+            } else if (!path.includes("/pages/")) {
+                window.location.href = "pages/marketplace/marketplace.html";
+            } else {
+                window.location.href = "../marketplace/marketplace.html";
+            }
         }
     }
 };

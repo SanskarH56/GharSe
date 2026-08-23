@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Marketplace - Artisan</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="../../index.html" class="brand">
+                <span class="brand-mark">A</span>
+                <span class="brand-name">Artisan</span>
+            </a>
+            <nav class="main-nav">
+                <a href="../../index.html" class="nav-link">Home</a>
+                <a href="marketplace.html" class="nav-link active">Explore</a>
+                <a href="../auth/login.html" class="nav-link" id="navLogin">Login</a>
+                <a href="../auth/signup.html" class="btn btn-primary nav-cta">Start Selling</a>
+            </nav>
+        </div>
+    </header>
+    <main class="section">
+        <div class="container">
+            <div class="section-heading">
+                <span class="eyebrow">Handcrafted & Local</span>
+                <h2>Explore Marketplace</h2>
+                <p>Discover unique products made by independent women entrepreneurs.</p>
+            </div>
+            <!-- Controls: Search, Category, Sort -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search products or craft types...">
+                
+                <select id="categoryFilter" class="form-control">
+                    <option value="">All Categories</option>
+                    <option value="Food">Food</option>
+                    <option value="Baked Goods">Baked Goods</option>
+                    <option value="Handicrafts">Handicrafts</option>
+                    <option value="Jewelry">Jewelry</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Home & Decor">Home & Decor</option>
+                </select>
+                <select id="sortFilter" class="form-control">
+                    <option value="newest">Sort: Newest</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                </select>
+            </div>
+            <!-- Dynamic Product Grid -->
+            <div class="product-preview-grid" id="marketplaceGrid">
+                <!-- JavaScript will populate products here -->
+            </div>
+        </div>
+    </main>
+    <script src="../../js/core/utils.js"></script>
+    <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
+    <script src="../../js/data/data-service.js"></script>
+    <script src="../../js/auth/session.js"></script>
+    <script src="../../js/auth/auth.js"></script>
+    <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/pages/marketplace.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = SessionManager.getUser();
+            const navContainer = document.querySelector(".main-nav");
+
+            if (user && navContainer) {
+                if (user.role === "seller") {
+                    navContainer.innerHTML = `
+                        <a href="marketplace.html" class="nav-link active">Explore</a>
+                        <a href="../seller/dashboard.html" class="nav-link">Dashboard</a>
+                        <a href="../seller/products.html" class="nav-link">My Products</a>
+                        <a href="cart.html" class="nav-link">Cart (<span id="cartCount">0</span>)</a>
+                        <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
+                    `;
+                } else {
+                    navContainer.innerHTML = `
+                        <a href="marketplace.html" class="nav-link active">Explore</a>
+                        <a href="../buyer/orders.html" class="nav-link">My Orders</a>
+                        <a href="../buyer/profile.html" class="nav-link">Profile</a>
+                        <a href="cart.html" class="nav-link">Cart (<span id="cartCount">0</span>)</a>
+                        <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
+                    `;
+                }
+                if (typeof updateCartBadge === "function") updateCartBadge();
+            }
+        });
+    </script>
+</body>
+</html>

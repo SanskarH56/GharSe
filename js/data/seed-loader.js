@@ -1,86 +1,104 @@
 /**
  * ARTISAN MARKETPLACE
- * Initial CSV & Seed Data Loader
+ * CSV Seed Loader Engine
  */
 
 const SeedLoader = {
 
     /**
-     * Parse raw CSV text into array of objects.
+     * Parse raw CSV text into an array of JavaScript objects.
      */
     parseCSV(csvText) {
-        if (!csvText || typeof csvText !== "string") return [];
-        
+        if (!csvText) return [];
         const lines = csvText.trim().split("\n");
         if (lines.length < 2) return [];
 
-        const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ''));
-        
-        return lines.slice(1).map(line => {
-            const values = line.split(",").map(v => v.trim().replace(/^"|"$/g, ''));
+        const headers = lines[0].split(",").map(h => h.trim());
+        const results = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            
+            // Basic CSV parser handling quoted comma values
+            const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(",");
             const row = {};
-            
+
             headers.forEach((header, index) => {
-                let value = values[index] ?? "";
-                if (value === "true") value = true;
-                else if (value === "false") value = false;
-                else if (!isNaN(value) && value !== "") value = Number(value);
-                
-                row[header] = value;
+                let val = values[index] ? values[index].trim() : "";
+                val = val.replace(/^"|"$/g, ""); // Strip surrounding quotes
+                row[header] = val;
             });
-            
-            return row;
-        });
-    },
 
-    /**
-     * Fallback initial data arrays if CSV files are not present.
-     */
-    getFallbackData() {
-        return {
-            users: [
-                { id: "usr_seller_1", email: "anita@artisan.local", role: "seller", name: "Anita Sharma" },
-                { id: "usr_buyer_1", email: "priya@artisan.local", role: "buyer", name: "Priya Patel" }
-            ],
-            seller_profiles: [
-                { id: "sel_1", userId: "usr_seller_1", storeName: "Anita's Craft Studio", bio: "Handcrafted decor and pottery.", city: "Jaipur" }
-            ],
-            buyer_profiles: [
-                { id: "buy_1", userId: "usr_buyer_1", address: "123 Main St, Mumbai" }
-            ],
-            products: [
-                { id: "prod_1", sellerId: "sel_1", name: "Handpainted Terracotta Vase", category: "Home & Decor", price: 850, stock: 12, rating: 4.8 },
-                { id: "prod_2", sellerId: "sel_1", name: "Handwoven Cotton Runner", category: "Home & Decor", price: 1200, stock: 8, rating: 4.9 }
-            ],
-            orders: [],
-            order_items: [],
-            transactions: []
-        };
-    },
-
-    /**
-     * Initialize local storage seed data.
-     */
-    async init(forceReset = false) {
-        const isInitialized = StorageEngine.get("artisan_initialized", false);
-        
-        if (isInitialized && !forceReset) {
-            console.log("[SeedLoader] Local storage already seeded.");
-            return;
+            results.push(row);
         }
 
-        console.log("[SeedLoader] Initializing database seed data...");
-        const fallback = this.getFallbackData();
+        return results;
+    },
 
-        StorageEngine.set("artisan_users", fallback.users);
-        StorageEngine.set("artisan_seller_profiles", fallback.seller_profiles);
-        StorageEngine.set("artisan_buyer_profiles", fallback.buyer_profiles);
-        StorageEngine.set("artisan_products", fallback.products);
-        StorageEngine.set("artisan_orders", fallback.orders);
-        StorageEngine.set("artisan_order_items", fallback.order_items);
-        StorageEngine.set("artisan_transactions", fallback.transactions);
-        StorageEngine.set("artisan_initialized", true);
+    /**
+     * Load CSV file from assets/data folder.
+     */
+    async fetchAndParse(fileName) {
+        try {
+            const response = await fetch(`../../data/${fileName}`);
+            if (!response.ok) return [];
+            const text = await response.text();
+            return this.parseCSV(text);
+        } catch (e) {
+            console.warn(`Could not load ${fileName}, defaulting to empty array.`);
+            return [];
+        }
+    },
 
-        console.log("[SeedLoader] Seed data loaded successfully.");
+    /**
+     * Initialize CSV seed data into localStorage if empty.
+     */
+    async init() {
+        // 1. Seed Users
+        if (!StorageEngine.get("artisan_users")) {
+            const users = await this.fetchAndParse("users.csv");
+            StorageEngine.set("artisan_users", users);
+        }
+
+        // 2. Seed Seller Profiles
+        if (!StorageEngine.get("artisan_seller_profiles")) {
+            const sellers = await this.fetchAndParse("seller_profiles.csv");
+            StorageEngine.set("artisan_seller_profiles", sellers);
+        }
+
+        // 3. Seed Buyer Profiles
+        if (!StorageEngine.get("artisan_buyer_profiles")) {
+            const buyers = await this.fetchAndParse("buyer_profiles.csv");
+            StorageEngine.set("artisan_buyer_profiles", buyers);
+        }
+
+        // 4. Seed Products directly from CSV only (NO static arrays)
+        if (!StorageEngine.get("artisan_products")) {
+            const products = await this.fetchAndParse("products.csv");
+            StorageEngine.set("artisan_products", products);
+        }
+
+        // 5. Seed Orders
+        if (!StorageEngine.get("artisan_orders")) {
+            const orders = await this.fetchAndParse("orders.csv");
+            StorageEngine.set("artisan_orders", orders);
+        }
+
+        // 6. Seed Order Items
+        if (!StorageEngine.get("artisan_order_items")) {
+            const orderItems = await this.fetchAndParse("order_items.csv");
+            StorageEngine.set("artisan_order_items", orderItems);
+        }
+
+        // 7. Seed Transactions
+        if (!StorageEngine.get("artisan_transactions")) {
+            const transactions = await this.fetchAndParse("transactions.csv");
+            StorageEngine.set("artisan_transactions", transactions);
+        }
     }
 };
+
+// Initialize seed data automatically when script runs
+document.addEventListener("DOMContentLoaded", () => {
+    SeedLoader.init();
+});
