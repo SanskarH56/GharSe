@@ -9,13 +9,16 @@ const ArtisanApp = {
 
     version: "1.0.0",
 
-    init() {
-        console.log(
-            `${this.name} v${this.version} initialized.`
-        );
+init() {
+    console.log(`${this.name} v${this.version} initialized.`);
+    
+    // Initialize initial seed data into local storage
+    if (typeof SeedLoader !== "undefined") {
+        SeedLoader.init();
+    }
 
-        this.initializeGlobalInteractions();
-    },
+    this.initializeGlobalInteractions();
+},
 
 
     initializeGlobalInteractions() {
