@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +80,7 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
@@ -98,15 +100,18 @@
 
             if (editId) {
                 const existing = DataService.getProductById(editId);
-                if (existing) {
-                    document.getElementById("formTitle").textContent = "Edit Product";
-                    document.getElementById("productId").value = existing.id;
-                    document.getElementById("productName").value = existing.name;
-                    document.getElementById("category").value = existing.category;
-                    document.getElementById("price").value = existing.price;
-                    document.getElementById("stock").value = existing.stock || 10;
-                    document.getElementById("description").value = existing.description || "";
+                if (!existing || existing.sellerId !== seller.id) {
+                    // Not found, or belongs to a different seller — do not allow editing.
+                    window.location.href = "products.html";
+                    return;
                 }
+                document.getElementById("formTitle").textContent = "Edit Product";
+                document.getElementById("productId").value = existing.id;
+                document.getElementById("productName").value = existing.name;
+                document.getElementById("category").value = existing.category;
+                document.getElementById("price").value = existing.price;
+                document.getElementById("stock").value = existing.stock || 10;
+                document.getElementById("description").value = existing.description || "";
             }
 
             document.getElementById("productForm").addEventListener("submit", (e) => {
@@ -125,10 +130,13 @@
 
                 if (pId) {
                     const products = StorageEngine.get("artisan_products", []);
-                    const idx = products.findIndex(p => p.id === pId);
+                    const idx = products.findIndex(p => p.id === pId && p.sellerId === seller.id);
                     if (idx > -1) {
                         products[idx] = { ...products[idx], ...productData };
                         StorageEngine.set("artisan_products", products);
+                    } else {
+                        alert("You do not have permission to edit this product.");
+                        return;
                     }
                 } else {
                     DataService.createProduct(productData);
@@ -140,3 +148,4 @@
     </script>
 </body>
 </html>
+

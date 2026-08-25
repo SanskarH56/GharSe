@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Landing Page
@@ -30,14 +31,8 @@ const HomePage = {
                     return;
                 }
 
-                /*
-                 * Marketplace filtering will be connected
-                 * once the marketplace/data layer exists.
-                 */
-
-                console.log(
-                    `Category selected: ${category}`
-                );
+                window.location.href =
+                    `pages/marketplace/marketplace.html?category=${encodeURIComponent(category)}`;
             });
 
         });

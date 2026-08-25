@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,6 +81,16 @@
     <script src="../../js/orders/orders.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const user = SessionManager.getUser();
+            if (!user) {
+                window.location.href = "../auth/login.html";
+                return;
+            }
+            if (user.role !== "buyer") {
+                window.location.href = "marketplace.html";
+                return;
+            }
+
             const summary = CartEngine.getSummary();
             const summaryContainer = document.getElementById("checkoutSummaryItems");
             const totalEl = document.getElementById("checkoutTotal");
@@ -119,6 +130,11 @@
                             <a href="marketplace.html" class="btn btn-primary" style="margin-top: 24px;">Back to Marketplace</a>
                         </div>
                     `;
+                } else {
+                    alert(result.message || "Something went wrong placing your order. Please try again.");
+                    if (!SessionManager.getUser()) {
+                        window.location.href = "../auth/login.html";
+                    }
                 }
             });
         });

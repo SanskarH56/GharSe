@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Seller Analytics Calculation Engine
@@ -21,21 +22,29 @@ const SellerAnalytics = {
             totalRevenue += subtotal;
             totalUnits += qty;
 
-            // Product performance breakdown
-            if (!productSalesMap[item.productName]) {
-                productSalesMap[item.productName] = { name: item.productName, units: 0, revenue: 0 };
+            // Product performance breakdown — keyed by productId so two
+            // products that happen to share a name never merge, and a
+            // renamed/deleted product still reports correctly under its
+            // original name at time of sale.
+            const key = item.productId || item.productName;
+            if (!productSalesMap[key]) {
+                productSalesMap[key] = { name: item.productName, units: 0, revenue: 0 };
             }
-            productSalesMap[item.productName].units += qty;
-            productSalesMap[item.productName].revenue += subtotal;
-        });
+            productSalesMap[key].units += qty;
+            productSalesMap[key].revenue += subtotal;
 
-        // Get product details for category mapping
-        const sellerProducts = DataService.getProductsBySeller(sellerId);
-        sellerProducts.forEach(prod => {
-            const cat = prod.category || "Uncategorized";
+            // Category performance — built directly from the order item's
+            // own snapshotted category (falls back to a current product
+            // lookup for historical items created before category snapshots
+            // were recorded), so this never drops revenue for a product
+            // that's since been deleted or recategorized.
+            let cat = item.category;
+            if (!cat) {
+                const product = DataService.getProductById(item.productId);
+                cat = (product && product.category) || "Uncategorized";
+            }
             if (!categorySalesMap[cat]) categorySalesMap[cat] = 0;
-            const perf = productSalesMap[prod.name];
-            if (perf) categorySalesMap[cat] += perf.revenue;
+            categorySalesMap[cat] += subtotal;
         });
 
         const topProducts = Object.values(productSalesMap).sort((a, b) => b.revenue - a.revenue);

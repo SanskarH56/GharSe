@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Orders & Transactions Controller
@@ -15,7 +16,10 @@ const OrderEngine = {
         }
 
         const currentUser = SessionManager.getUser();
-        const buyerId = currentUser ? currentUser.id : "usr_guest";
+        if (!currentUser) {
+            return { success: false, message: "You must be logged in to place an order." };
+        }
+        const buyerId = currentUser.id;
 
         const orderId = generateId("ord");
         const transactionId = generateId("txn");
@@ -46,6 +50,7 @@ const OrderEngine = {
                 productId: item.productId,
                 sellerId: item.product.sellerId,
                 productName: item.product.name,
+                category: item.product.category || "Uncategorized",
                 price: item.product.price,
                 quantity: item.quantity,
                 subtotal: item.lineTotal

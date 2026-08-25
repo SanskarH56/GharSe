@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +39,7 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
@@ -46,6 +48,10 @@
             const user = SessionManager.getUser();
             if (!user) {
                 window.location.href = "../auth/login.html";
+                return;
+            }
+            if (user.role !== "buyer") {
+                window.location.href = "../seller/dashboard.html";
                 return;
             }
 
@@ -86,6 +92,11 @@
                                     <strong>${formatCurrency(item.subtotal)}</strong>
                                 </div>
                             `).join('')}
+                        </div>
+
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border); font-size: 0.82rem; color: var(--color-text-muted);">
+                            <p>Shipped to: ${escapeHTML(order.shippingAddress || '—')}${order.city ? ', ' + escapeHTML(order.city) : ''}${order.pincode ? ' ' + escapeHTML(order.pincode) : ''}</p>
+                            ${order.paymentMethod ? `<p style="margin-top: 2px;">Paid via: ${escapeHTML(order.paymentMethod)}</p>` : ''}
                         </div>
                     </div>
                 `;

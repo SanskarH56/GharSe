@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +35,7 @@
     <script src="../../js/data/storage.js"></script>
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
+    <script src="../../js/auth/session.js"></script>
     <script src="../../js/cart/cart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -53,6 +55,14 @@
             }
 
             const seller = DataService.getSellerById(product.sellerId);
+            const stock = (typeof product.stock === "number") ? product.stock : parseInt(product.stock, 10);
+            const inStock = !isNaN(stock) ? stock > 0 : true; // if stock isn't tracked for this product, don't block purchase
+            const stockLabel = !isNaN(stock)
+                ? (stock > 0 ? `${stock} in stock` : "Out of stock")
+                : "";
+
+            const currentUser = SessionManager.getUser();
+            const isSeller = currentUser && currentUser.role === "seller";
 
             container.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
@@ -68,14 +78,39 @@
 
                         <h2 style="font-size: 2rem; color: var(--color-primary); margin-top: 20px;">${formatCurrency(product.price)}</h2>
 
+                        ${stockLabel ? `<p style="margin-top: 8px; font-size: 0.9rem; color: ${inStock ? 'var(--color-text-muted)' : 'var(--color-error)'};">${escapeHTML(stockLabel)}</p>` : ""}
+
                         <p style="margin-top: 20px; color: var(--color-text-secondary); line-height: 1.6;">${escapeHTML(product.description || 'Authentic product handcrafted by independent women entrepreneurs.')}</p>
 
-                        <div style="margin-top: 30px; display: flex; gap: 15px;">
-                            <button class="btn btn-primary btn-large" style="flex: 1;" onclick="CartEngine.addItem('${product.id}', 1); alert('Added to cart!');">Add to Cart</button>
-                        </div>
+                        ${isSeller ? `
+                            <p style="margin-top: 30px; color: var(--color-text-muted); font-size: 0.9rem;">Sellers cannot purchase products. Log in as a buyer to add items to cart.</p>
+                        ` : !inStock ? `
+                            <div style="margin-top: 30px;">
+                                <button class="btn btn-secondary" style="width: 100%;" disabled>Out of Stock</button>
+                            </div>
+                        ` : `
+                            <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
+                                <input type="number" id="productQty" min="1" ${!isNaN(stock) ? `max="${stock}"` : ""} value="1" style="width: 70px; padding: 10px; text-align: center;">
+                                <button class="btn btn-primary btn-large" style="flex: 1;" id="addToCartBtn">Add to Cart</button>
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
+
+            const addBtn = document.getElementById("addToCartBtn");
+            if (addBtn) {
+                addBtn.addEventListener("click", () => {
+                    const qtyInput = document.getElementById("productQty");
+                    let qty = parseInt(qtyInput.value, 10);
+                    if (isNaN(qty) || qty < 1) qty = 1;
+                    if (!isNaN(stock) && qty > stock) qty = stock;
+
+                    CartEngine.addItem(product.id, qty);
+                    if (typeof updateCartBadge === "function") updateCartBadge();
+                    alert("Added to cart!");
+                });
+            }
         });
     </script>
 </body>

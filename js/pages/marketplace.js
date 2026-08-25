@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Dynamic Marketplace Catalog Script
@@ -6,8 +7,27 @@
 const MarketplacePage = {
 
     init() {
+        this.applyCategoryFromURL();
         this.renderProducts();
         this.bindEvents();
+    },
+
+    /**
+     * If the page was reached via a link like
+     * marketplace.html?category=Food, pre-select that category
+     * in the filter dropdown before the first render.
+     */
+    applyCategoryFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get("category");
+        const categoryFilter = document.getElementById("categoryFilter");
+        if (category && categoryFilter) {
+            const matchingOption = Array.from(categoryFilter.options)
+                .find(opt => opt.value.toLowerCase() === category.toLowerCase());
+            if (matchingOption) {
+                categoryFilter.value = matchingOption.value;
+            }
+        }
     },
 
     bindEvents() {
