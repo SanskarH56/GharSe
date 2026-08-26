@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Artisan</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="../../index.html" class="brand">
+                <span class="brand-mark">A</span>
+                <span class="brand-name">Artisan</span>
+            </a>
+            <nav class="main-nav">
+                <a href="../marketplace/marketplace.html" class="nav-link">Explore</a>
+                <a href="orders.html" class="nav-link">My Orders</a>
+                <a href="profile.html" class="nav-link active">Profile</a>
+                <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="section">
+        <div class="container" style="max-width: 500px;">
+            <div class="metric-card">
+                <h2>Account Settings</h2>
+                <p style="margin-bottom: 24px; color: var(--color-text-muted);">Manage your account details and delivery address.</p>
+
+                <div id="profileAlert" style="display: none; padding: 10px; border-radius: 8px; margin-bottom: 16px; background: #e6f4ea; color: var(--color-success); font-size: 0.88rem;"></div>
+
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" disabled style="opacity: 0.7; cursor: not-allowed;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="address">Shipping Address</label>
+                        <textarea id="address" class="form-control" rows="3" placeholder="Enter default shipping address"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Save Profile</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/core/utils.js"></script>
+    <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
+    <script src="../../js/data/data-service.js"></script>
+    <script src="../../js/auth/session.js"></script>
+    <script src="../../js/auth/auth.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = SessionManager.getUser();
+            if (!user) {
+                window.location.href = "../auth/login.html";
+                return;
+            }
+            if (user.role !== "buyer") {
+                window.location.href = "../seller/dashboard.html";
+                return;
+            }
+
+            document.getElementById("name").value = user.name || "";
+            document.getElementById("email").value = user.email || "";
+
+            const buyers = StorageEngine.get("artisan_buyer_profiles", []);
+            let profile = buyers.find(b => b.userId === user.id);
+            if (profile) {
+                document.getElementById("address").value = profile.address || "";
+            }
+
+            document.getElementById("profileForm").addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                // Update user name
+                const users = StorageEngine.get("artisan_users", []);
+                const uIndex = users.findIndex(u => u.id === user.id);
+                if (uIndex > -1) {
+                    users[uIndex].name = document.getElementById("name").value;
+                    StorageEngine.set("artisan_users", users);
+                    SessionManager.setUser(users[uIndex]);
+                }
+
+                // Update buyer profile address. If no profile row exists yet
+                // for this user (e.g. it was never created at signup), create
+                // one now instead of silently discarding the address.
+                if (!profile) {
+                    profile = { id: generateId("buy"), userId: user.id, address: "" };
+                    buyers.push(profile);
+                }
+                profile.address = document.getElementById("address").value;
+                StorageEngine.set("artisan_buyer_profiles", buyers);
+
+                const alertEl = document.getElementById("profileAlert");
+                alertEl.textContent = "Profile updated successfully!";
+                alertEl.style.display = "block";
+            });
+        });
+    </script>
+</body>
+</html>
