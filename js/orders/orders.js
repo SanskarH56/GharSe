@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Orders & Transactions Controller
@@ -15,7 +16,10 @@ const OrderEngine = {
         }
 
         const currentUser = SessionManager.getUser();
-        const buyerId = currentUser ? currentUser.id : "usr_guest";
+        if (!currentUser) {
+            return { success: false, message: "You must be logged in to place an order." };
+        }
+        const buyerId = currentUser.id;
 
         const orderId = generateId("ord");
         const transactionId = generateId("txn");
@@ -46,12 +50,27 @@ const OrderEngine = {
                 productId: item.productId,
                 sellerId: item.product.sellerId,
                 productName: item.product.name,
+                category: item.product.category || "Uncategorized",
                 price: item.product.price,
                 quantity: item.quantity,
-                subtotal: item.lineTotal
+                subtotal: item.lineTotal,
+                paymentMethod: paymentMethod
             });
         });
         StorageEngine.set("artisan_order_items", orderItems);
+
+        // 2b. Decrement product stock for each purchased item
+        const products = StorageEngine.get("artisan_products", []);
+        cartSummary.items.forEach(item => {
+            const productIndex = products.findIndex(p => p.id === item.productId);
+            if (productIndex > -1) {
+                const currentStock = parseInt(products[productIndex].stock, 10);
+                if (!isNaN(currentStock)) {
+                    products[productIndex].stock = Math.max(0, currentStock - item.quantity);
+                }
+            }
+        });
+        StorageEngine.set("artisan_products", products);
 
         // 3. Create Transaction log
         const transactions = StorageEngine.get("artisan_transactions", []);

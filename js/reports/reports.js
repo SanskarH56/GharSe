@@ -1,3 +1,4 @@
+
 /**
  * ARTISAN MARKETPLACE
  * Reports Engine
@@ -27,7 +28,7 @@ const ReportEngine = {
                 quantity: item.quantity,
                 unitPrice: item.price,
                 subtotal: item.subtotal,
-                paymentMethod: parentOrder.paymentMethod || "Simulated Card"
+                paymentMethod: item.paymentMethod || parentOrder.paymentMethod || "Simulated Card"
             };
         });
     }

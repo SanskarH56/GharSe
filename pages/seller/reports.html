@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +21,8 @@
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="products.html" class="nav-link">My Products</a>
                 <a href="analytics.html" class="nav-link">Analytics</a>
-                <a href="reports.html" class="nav-link active">Reports</a>
+                <span class="nav-link active" style="cursor: default; opacity: 0.6;">Reports</span>
+                <a href="../marketplace/marketplace.html" class="nav-link">Marketplace</a>
                 <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
             </nav>
         </div>
@@ -67,12 +69,13 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
     <script src="../../js/reports/reports.js"></script>
-    <script src="../../js/reports/excel-export.js"></script>
-    <script src="../../js/reports/pdf-export.js"></script>
+    <script src="../../js/reports/excel-report.js"></script>
+    <script src="../../js/reports/pdf-report.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const user = SessionManager.getUser();
@@ -88,9 +91,16 @@
             function render() {
                 const start = document.getElementById("startDate").value;
                 const end = document.getElementById("endDate").value;
+                const tbody = document.getElementById("reportTableBody");
+
+                if (start && end && start > end) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: var(--color-error);">"From Date" must be before "To Date". Please adjust your date range.</td></tr>`;
+                    currentData = [];
+                    return;
+                }
+
                 currentData = ReportEngine.getFilteredOrders(seller.id, start, end);
 
-                const tbody = document.getElementById("reportTableBody");
                 if (currentData.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No transaction records found for selected dates.</td></tr>`;
                     return;

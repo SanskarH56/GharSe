@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,8 +18,10 @@
                 <span class="brand-name">Artisan Studio</span>
             </a>
             <nav class="main-nav">
-                <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                <span class="nav-link active" style="cursor: default; opacity: 0.6;">Dashboard</span>
                 <a href="products.html" class="nav-link">My Products</a>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="reports.html" class="nav-link">Reports</a>
                 <a href="../marketplace/marketplace.html" class="nav-link">Marketplace</a>
                 <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
             </nav>
@@ -68,6 +71,7 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>

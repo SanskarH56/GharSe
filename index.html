@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,6 +46,8 @@
 
             <nav class="main-nav" aria-label="Main navigation">
 
+                <span id="navGreeting" style="display: none; font-weight: 600; color: var(--color-text-muted); margin-right: 8px; font-size: 0.9rem;"></span>
+
                 <a href="index.html" class="nav-link active">
                     Home
                 </a>
@@ -53,20 +56,30 @@
                     Explore
                 </a>
 
-                <a href="#" class="nav-link">
+                <a href="pages/marketplace/trends.html" class="nav-link">
                     Trends
                 </a>
 
-                <a href="pages/auth/login.html" class="nav-link">
+                <a href="pages/auth/login.html" class="nav-link" id="navLogin">
                     Login
                 </a>
 
                 <a
                     href="pages/auth/signup.html"
                     class="btn btn-primary nav-cta"
+                    id="navSignup"
                 >
                     Start Selling
                 </a>
+
+                <button
+                    class="btn btn-secondary"
+                    id="navLogout"
+                    style="display: none;"
+                    onclick="AuthController.logout()"
+                >
+                    Logout
+                </button>
 
             </nav>
 
@@ -575,7 +588,7 @@
                     Marketplace
                 </a>
 
-                <a href="#">
+                <a href="pages/marketplace/trends.html">
                     Trends
                 </a>
 
@@ -635,14 +648,28 @@
 
             <script src="js/core/utils.js"></script>
             <script src="js/data/storage.js"></script>
+            <script src="js/data/seed-loader.js"></script>
+            <script src="js/data/data-service.js"></script>
             <script src="js/auth/session.js"></script>
             <script src="js/auth/auth.js"></script>
+            <script src="js/pages/home.js"></script>
+            <script src="js/core/app.js"></script>
             <script>
                 document.addEventListener("DOMContentLoaded", () => {
                     const user = SessionManager.getUser();
                     if (user) {
                         const navLogin = document.getElementById("navLogin");
                         const navSignup = document.getElementById("navSignup");
+                        const navLogout = document.getElementById("navLogout");
+                        const navGreeting = document.getElementById("navGreeting");
+
+                        if (navGreeting) {
+                            navGreeting.textContent = `Hi, ${user.name || "there"}`;
+                            navGreeting.style.display = "inline";
+                        }
+                        if (navLogout) {
+                            navLogout.style.display = "inline-block";
+                        }
 
                         if (user.role === "seller") {
                             if (navLogin) {

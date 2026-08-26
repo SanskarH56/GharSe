@@ -1,3 +1,4 @@
+
 /* =========================================
    REUSABLE COMPONENTS
 ========================================= */
@@ -130,6 +131,7 @@
 ========================================= */
 
 .category-card {
+    position: relative;
     min-height: 150px;
 
     display: flex;
@@ -159,7 +161,8 @@
 
 .category-icon {
     position: absolute;
-    margin-top: -75px;
+    top: 22px;
+    left: 22px;
 
     color: var(--color-primary);
 

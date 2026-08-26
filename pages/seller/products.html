@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,10 @@
             </a>
             <nav class="main-nav">
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="products.html" class="nav-link active">My Products</a>
+                <span class="nav-link active" style="cursor: default; opacity: 0.6;">My Products</span>
+                <a href="analytics.html" class="nav-link">Analytics</a>
+                <a href="reports.html" class="nav-link">Reports</a>
+                <a href="../marketplace/marketplace.html" class="nav-link">Marketplace</a>
                 <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
             </nav>
         </div>
@@ -31,6 +35,7 @@
                     <h2>My Product Listings</h2>
                     <p style="color: var(--color-text-muted);">Manage your active products and inventory.</p>
                 </div>
+                <a href="product-form.html" class="btn btn-primary">+ Add New Product</a>
             </div>
 
             <div id="sellerProductsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;">
@@ -41,6 +46,7 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
@@ -70,6 +76,7 @@
                         <h4 style="margin-top: 10px;">${escapeHTML(product.name)}</h4>
                         <strong style="color: var(--color-primary);">${formatCurrency(product.price)}</strong>
                         <div style="margin-top: 14px; display: flex; gap: 8px;">
+                            <a href="product-form.html?id=${product.id}" class="btn btn-secondary" style="flex: 1; padding: 6px; text-align: center;">Edit</a>
                             <button class="btn btn-secondary" style="flex: 1; padding: 6px; color: var(--color-error);" onclick="deleteItem('${product.id}')">Delete</button>
                         </div>
                     </div>
@@ -78,7 +85,7 @@
 
             window.deleteItem = function(id) {
                 if (confirm("Are you sure you want to remove this product?")) {
-                    DataService.deleteProduct(id);
+                    DataService.deleteProduct(id, seller.id);
                     render();
                 }
             };
@@ -87,4 +94,4 @@
         });
     </script>
 </body>
-</html
+</html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,6 +54,7 @@
     <script src="../../js/data/storage.js"></script>
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
+    <script src="../../js/auth/session.js"></script>
     <script src="../../js/cart/cart.js"></script>
     <script>
         function renderCart() {
@@ -86,15 +88,33 @@
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <input type="number" min="1" value="${item.quantity}" style="width: 60px; padding: 6px;" onchange="CartEngine.updateQuantity('${item.productId}', parseInt(this.value)); renderCart();">
+                        <input type="number" min="1" value="${item.quantity}" style="width: 60px; padding: 6px;" onchange="handleQuantityChange('${item.productId}', this)">
                         <strong>${formatCurrency(item.lineTotal)}</strong>
-                        <button class="btn btn-secondary" style="padding: 6px 12px; color: var(--color-error);" onclick="CartEngine.removeItem('${item.productId}'); renderCart();">Remove</button>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; color: var(--color-error);" onclick="CartEngine.removeItem('${item.productId}'); renderCart(); updateCartBadge();">Remove</button>
                     </div>
                 </div>
             `).join("");
         }
 
-        document.addEventListener("DOMContentLoaded", renderCart);
+        function handleQuantityChange(productId, inputEl) {
+            const requestedQty = parseInt(inputEl.value, 10);
+            CartEngine.updateQuantity(productId, requestedQty);
+
+            // Check whether the requested quantity was clamped to available stock
+            const summary = CartEngine.getSummary();
+            const updatedItem = summary.items.find(i => i.productId === productId);
+            if (updatedItem && requestedQty > updatedItem.quantity) {
+                alert(`Only ${updatedItem.quantity} left in stock — quantity has been adjusted.`);
+            }
+
+            renderCart();
+            updateCartBadge();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            renderCart();
+            updateCartBadge();
+        });
     </script>
 </body>
 </html>

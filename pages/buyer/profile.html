@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,6 +58,7 @@
 
     <script src="../../js/core/utils.js"></script>
     <script src="../../js/data/storage.js"></script>
+    <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
@@ -67,12 +69,16 @@
                 window.location.href = "../auth/login.html";
                 return;
             }
+            if (user.role !== "buyer") {
+                window.location.href = "../seller/dashboard.html";
+                return;
+            }
 
             document.getElementById("name").value = user.name || "";
             document.getElementById("email").value = user.email || "";
 
             const buyers = StorageEngine.get("artisan_buyer_profiles", []);
-            const profile = buyers.find(b => b.userId === user.id);
+            let profile = buyers.find(b => b.userId === user.id);
             if (profile) {
                 document.getElementById("address").value = profile.address || "";
             }
@@ -89,11 +95,15 @@
                     SessionManager.setUser(users[uIndex]);
                 }
 
-                // Update buyer profile address
-                if (profile) {
-                    profile.address = document.getElementById("address").value;
-                    StorageEngine.set("artisan_buyer_profiles", buyers);
+                // Update buyer profile address. If no profile row exists yet
+                // for this user (e.g. it was never created at signup), create
+                // one now instead of silently discarding the address.
+                if (!profile) {
+                    profile = { id: generateId("buy"), userId: user.id, address: "" };
+                    buyers.push(profile);
                 }
+                profile.address = document.getElementById("address").value;
+                StorageEngine.set("artisan_buyer_profiles", buyers);
 
                 const alertEl = document.getElementById("profileAlert");
                 alertEl.textContent = "Profile updated successfully!";
