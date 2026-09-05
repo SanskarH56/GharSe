@@ -17,11 +17,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan</span>
             </a>
-            <nav class="main-nav">
-                <a href="../../index.html" class="nav-link">Home</a>
-                <a href="marketplace.html" class="nav-link active">Explore</a>
-                <a href="../auth/login.html" class="nav-link">Login</a>
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -36,7 +37,11 @@
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
+    <script src="../../js/auth/auth.js"></script>
     <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/cart/cart-ux.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search);
@@ -62,7 +67,9 @@
                 : "";
 
             const currentUser = SessionManager.getUser();
+            const isGuest = !currentUser;
             const isSeller = currentUser && currentUser.role === "seller";
+            const canBuy = !isGuest && !isSeller;
 
             container.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
@@ -83,7 +90,11 @@
                         <p style="margin-top: 20px; color: var(--color-text-secondary); line-height: 1.6;">${escapeHTML(product.description || 'Authentic product handcrafted by independent women entrepreneurs.')}</p>
 
                         ${isSeller ? `
-                            <p style="margin-top: 30px; color: var(--color-text-muted); font-size: 0.9rem;">Sellers cannot purchase products. Log in as a buyer to add items to cart.</p>
+                            <p style="margin-top: 30px; color: var(--color-text-muted); font-size: 0.9rem;">Sellers cannot purchase products. Log out and use a buyer account to add items to cart.</p>
+                        ` : isGuest ? `
+                            <div style="margin-top: 30px;">
+                                <button class="btn btn-primary btn-large" style="width: 100%;" id="addToCartBtn">Add to Cart</button>
+                            </div>
                         ` : !inStock ? `
                             <div style="margin-top: 30px;">
                                 <button class="btn btn-secondary" style="width: 100%;" disabled>Out of Stock</button>
@@ -101,6 +112,11 @@
             const addBtn = document.getElementById("addToCartBtn");
             if (addBtn) {
                 addBtn.addEventListener("click", () => {
+                    if (!canBuy) {
+                        showLoginPrompt(isGuest ? "guest" : "seller");
+                        return;
+                    }
+
                     const qtyInput = document.getElementById("productQty");
                     let qty = parseInt(qtyInput.value, 10);
                     if (isNaN(qty) || qty < 1) qty = 1;
@@ -108,7 +124,9 @@
 
                     CartEngine.addItem(product.id, qty);
                     if (typeof updateCartBadge === "function") updateCartBadge();
-                    alert("Added to cart!");
+                    if (typeof showToast === "function") {
+                        showToast(`Added ${qty} item(s) to cart.`, "success");
+                    }
                 });
             }
         });

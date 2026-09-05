@@ -17,12 +17,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan</span>
             </a>
-            <nav class="main-nav">
-                <a href="../marketplace/marketplace.html" class="nav-link">Explore</a>
-                <a href="orders.html" class="nav-link">My Orders</a>
-                <a href="profile.html" class="nav-link active">Profile</a>
-                <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -62,6 +62,9 @@
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
+    <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const user = SessionManager.getUser();

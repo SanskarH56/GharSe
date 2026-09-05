@@ -33,10 +33,10 @@
                         <label class="form-label">I want to...</label>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <label style="padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-small); cursor: pointer; text-align: center;">
-                                <input type="radio" name="role" value="buyer" checked style="margin-right: 6px;"> Discover & Buy
+                                <input type="radio" name="role" id="roleBuyer" value="buyer" style="margin-right: 6px;"> Discover & Buy
                             </label>
                             <label style="padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-small); cursor: pointer; text-align: center;">
-                                <input type="radio" name="role" value="seller" style="margin-right: 6px;"> Start Selling
+                                <input type="radio" name="role" id="roleSeller" value="seller" style="margin-right: 6px;"> Start Selling
                             </label>
                         </div>
                     </div>
@@ -72,17 +72,32 @@
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const roleParam = params.get("role");
+            if (roleParam === "buyer" || roleParam === "seller") {
+                const radio = document.getElementById(roleParam === "buyer" ? "roleBuyer" : "roleSeller");
+                if (radio) radio.checked = true;
+            }
+        });
+
         document.getElementById("signupForm").addEventListener("submit", (e) => {
             e.preventDefault();
             const alertEl = document.getElementById("authAlert");
             alertEl.style.display = "none";
 
-            const selectedRole = document.querySelector('input[name="role"]:checked').value;
+            const selectedRoleInput = document.querySelector('input[name="role"]:checked');
+            if (!selectedRoleInput) {
+                alertEl.textContent = "Please choose whether you want to buy or sell.";
+                alertEl.style.display = "block";
+                return;
+            }
+
             const result = AuthController.signup({
                 name: document.getElementById("name").value,
                 email: document.getElementById("email").value,
                 password: document.getElementById("password").value,
-                role: selectedRole
+                role: selectedRoleInput.value
             });
 
             if (result.success) {

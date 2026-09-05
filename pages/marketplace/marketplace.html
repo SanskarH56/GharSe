@@ -16,12 +16,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan</span>
             </a>
-            <nav class="main-nav">
-                <a href="../../index.html" class="nav-link">Home</a>
-                <a href="marketplace.html" class="nav-link active">Explore</a>
-                <a href="../auth/login.html" class="nav-link" id="navLogin">Login</a>
-                <a href="../auth/signup.html" class="btn btn-primary nav-cta">Start Selling</a>
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
     <main class="section">
@@ -65,32 +65,9 @@
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
     <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/cart/cart-ux.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script src="../../js/pages/marketplace.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const user = SessionManager.getUser();
-            const navContainer = document.querySelector(".main-nav");
-
-            if (user && navContainer) {
-                if (user.role === "seller") {
-                    navContainer.innerHTML = `
-                        <a href="marketplace.html" class="nav-link active">Explore</a>
-                        <a href="../seller/dashboard.html" class="nav-link">Dashboard</a>
-                        <a href="../seller/products.html" class="nav-link">My Products</a>
-                        <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
-                    `;
-                } else {
-                    navContainer.innerHTML = `
-                        <a href="marketplace.html" class="nav-link active">Explore</a>
-                        <a href="../buyer/orders.html" class="nav-link">My Orders</a>
-                        <a href="../buyer/profile.html" class="nav-link">Profile</a>
-                        <a href="cart.html" class="nav-link">Cart (<span id="cartCount">0</span>)</a>
-                        <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
-                    `;
-                }
-                if (typeof updateCartBadge === "function") updateCartBadge();
-            }
-        });
-    </script>
 </body>
 </html>

@@ -16,9 +16,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan</span>
             </a>
-            <nav class="main-nav">
-                <a href="marketplace.html" class="nav-link">Explore</a>
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
     <main class="section">
@@ -36,6 +39,12 @@
     <script src="../../js/data/storage.js"></script>
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
+    <script src="../../js/auth/session.js"></script>
+    <script src="../../js/auth/auth.js"></script>
+    <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/cart/cart-ux.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search);
@@ -58,20 +67,44 @@
                 productsGrid.innerHTML = `<p style="grid-column: 1 / -1;">This maker currently has no active product listings.</p>`;
                 return;
             }
-            productsGrid.innerHTML = products.map(product => `
-                <article class="preview-product-card">
-                    <div class="preview-product-image">
-                        <span class="product-category">${escapeHTML(product.category)}</span>
-                    </div>
-                    <div class="preview-product-info">
-                        <h3>${escapeHTML(product.name)}</h3>
-                        <strong>${formatCurrency(product.price)}</strong>
-                        <div style="margin-top: 14px;">
-                            <a href="product.html?id=${product.id}" class="btn btn-secondary" style="font-size: 0.8rem; width: 100%;">View Item</a>
+
+            const currentUser = SessionManager.getUser();
+            const canBuy = currentUser && currentUser.role !== "seller";
+
+            productsGrid.innerHTML = products.map(product => {
+                const stock = parseInt(product.stock, 10);
+                const outOfStock = !isNaN(stock) && stock <= 0;
+                return `
+                    <article class="preview-product-card">
+                        <div class="preview-product-image">
+                            <span class="product-category">${escapeHTML(product.category)}</span>
                         </div>
-                    </div>
-                </article>
-            `).join("");
+                        <div class="preview-product-info">
+                            <h3>${escapeHTML(product.name)}</h3>
+                            <strong>${formatCurrency(product.price)}</strong>
+                            <div style="margin-top: 14px; display: flex; gap: 8px;">
+                                <a href="product.html?id=${product.id}" class="btn btn-secondary" style="font-size: 0.8rem; flex: 1; text-align: center;">View Item</a>
+                                ${outOfStock ? "" : `
+                                    <button class="btn btn-primary" style="font-size: 0.8rem; flex: 1;" data-add-to-cart data-product-id="${product.id}">Add to Cart</button>
+                                `}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+
+            document.querySelectorAll("[data-add-to-cart]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    if (!canBuy) {
+                        showLoginPrompt(!currentUser ? "guest" : "seller");
+                        return;
+                    }
+                    const productId = btn.getAttribute("data-product-id");
+                    CartEngine.addItem(productId, 1);
+                    if (typeof updateCartBadge === "function") updateCartBadge();
+                    showToast("Added to cart.", "success");
+                });
+            });
         });
     </script>
 </body>

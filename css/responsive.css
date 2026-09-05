@@ -108,6 +108,26 @@
         display: flex;
     }
 
+    .nav-greeting {
+        padding: 6px 4px;
+    }
+
+    .nav-profile-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+        margin-top: 4px;
+        padding-left: 8px;
+    }
+
+    .nav-profile-menu.open {
+        display: flex;
+    }
+
     .hero-section {
         padding: 60px 0 75px;
     }

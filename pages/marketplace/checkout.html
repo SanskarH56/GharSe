@@ -17,6 +17,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan</span>
             </a>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -77,7 +83,11 @@
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
+    <script src="../../js/auth/auth.js"></script>
     <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/cart/cart-ux.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script src="../../js/orders/orders.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -131,7 +141,7 @@
                         </div>
                     `;
                 } else {
-                    alert(result.message || "Something went wrong placing your order. Please try again.");
+                    showToast(result.message || "Something went wrong placing your order. Please try again.", "error");
                     if (!SessionManager.getUser()) {
                         window.location.href = "../auth/login.html";
                     }

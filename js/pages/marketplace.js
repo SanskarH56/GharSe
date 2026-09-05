@@ -73,9 +73,14 @@ const MarketplacePage = {
             return;
         }
 
+        const currentUser = SessionManager.getUser();
+        const canBuy = currentUser && currentUser.role !== "seller";
+
         grid.innerHTML = products.map(product => {
             const seller = DataService.getSellerById(product.sellerId);
             const storeName = seller ? seller.storeName : "Independent Maker";
+            const stock = parseInt(product.stock, 10);
+            const outOfStock = !isNaN(stock) && stock <= 0;
 
             return `
                 <article class="preview-product-card">
@@ -86,13 +91,40 @@ const MarketplacePage = {
                         <p style="font-size: 0.78rem; color: var(--color-text-muted);">${escapeHTML(storeName)}</p>
                         <h3>${escapeHTML(product.name)}</h3>
                         <strong>${formatCurrency(product.price)}</strong>
-                        <div style="margin-top: 14px;">
-                            <a href="product.html?id=${product.id}" class="btn btn-secondary" style="font-size: 0.8rem; width: 100%; text-align: center;">View Details</a>
+                        <div style="margin-top: 14px; display: flex; gap: 8px;">
+                            <a href="product.html?id=${product.id}" class="btn btn-secondary" style="font-size: 0.8rem; flex: 1; text-align: center;">View Details</a>
+                            ${outOfStock ? "" : `
+                                <button
+                                    class="btn btn-primary"
+                                    style="font-size: 0.8rem; flex: 1;"
+                                    data-add-to-cart
+                                    data-product-id="${product.id}"
+                                >Add to Cart</button>
+                            `}
                         </div>
                     </div>
                 </article>
             `;
         }).join("");
+
+        this.wireUpAddToCartButtons(canBuy, currentUser);
+    },
+
+    wireUpAddToCartButtons(canBuy, currentUser) {
+        document.querySelectorAll("[data-add-to-cart]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                if (!canBuy) {
+                    const reason = !currentUser ? "guest" : "seller";
+                    showLoginPrompt(reason);
+                    return;
+                }
+
+                const productId = btn.getAttribute("data-product-id");
+                CartEngine.addItem(productId, 1);
+                if (typeof updateCartBadge === "function") updateCartBadge();
+                showToast("Added to cart.", "success");
+            });
+        });
     }
 };
 

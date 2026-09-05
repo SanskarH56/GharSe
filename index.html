@@ -44,44 +44,7 @@
                 </span>
             </a>
 
-            <nav class="main-nav" aria-label="Main navigation">
-
-                <span id="navGreeting" style="display: none; font-weight: 600; color: var(--color-text-muted); margin-right: 8px; font-size: 0.9rem;"></span>
-
-                <a href="index.html" class="nav-link active">
-                    Home
-                </a>
-
-                <a href="pages/marketplace/marketplace.html" class="nav-link">
-                    Explore
-                </a>
-
-                <a href="pages/marketplace/trends.html" class="nav-link">
-                    Trends
-                </a>
-
-                <a href="pages/auth/login.html" class="nav-link" id="navLogin">
-                    Login
-                </a>
-
-                <a
-                    href="pages/auth/signup.html"
-                    class="btn btn-primary nav-cta"
-                    id="navSignup"
-                >
-                    Start Selling
-                </a>
-
-                <button
-                    class="btn btn-secondary"
-                    id="navLogout"
-                    style="display: none;"
-                    onclick="AuthController.logout()"
-                >
-                    Logout
-                </button>
-
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
 
             <button
                 class="mobile-menu-button"
@@ -135,7 +98,7 @@
                         </a>
 
                         <a
-                            href="pages/auth/signup.html"
+                            href="pages/auth/signup.html?role=seller"
                             class="btn btn-secondary btn-large"
                         >
                             Start Selling
@@ -195,6 +158,40 @@
                     <div class="hero-decoration hero-decoration-one"></div>
                     <div class="hero-decoration hero-decoration-two"></div>
 
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TRENDING PRODUCTS
+        ========================== -->
+        <section class="section trending-section">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <span class="eyebrow">
+                        Popular right now
+                    </span>
+
+                    <h2>
+                        Trending products
+                    </h2>
+
+                </div>
+
+                <div class="product-preview-grid" id="homeTrendingGrid">
+                    <!-- Populated by home.js -->
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="pages/marketplace/trends.html" class="btn btn-secondary">
+                        View All Trends
+                    </a>
                 </div>
 
             </div>
@@ -543,13 +540,45 @@
                     </div>
 
                     <a
-                        href="pages/auth/signup.html"
+                        href="pages/auth/signup.html?role=seller"
                         class="btn btn-light btn-large"
                     >
                         Start Selling
                     </a>
 
                 </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BUYER CTA
+        ========================== -->
+        <section class="section">
+
+            <div class="container" style="text-align: center;">
+
+                <span class="eyebrow">
+                    Just here to shop?
+                </span>
+
+                <h2 style="margin-top: 8px;">
+                    Create a buyer account and start discovering.
+                </h2>
+
+                <p style="margin-top: 8px; color: var(--color-text-secondary);">
+                    Save your details, track orders, and check out faster.
+                </p>
+
+                <a
+                    href="pages/auth/signup.html?role=buyer"
+                    class="btn btn-primary btn-large"
+                    style="margin-top: 20px;"
+                >
+                    Become a Buyer
+                </a>
 
             </div>
 
@@ -603,7 +632,7 @@
 
                 <h3>Sell</h3>
 
-                <a href="pages/auth/signup.html">
+                <a href="pages/auth/signup.html?role=seller">
                     Start Selling
                 </a>
 
@@ -622,7 +651,7 @@
                     Login
                 </a>
 
-                <a href="pages/auth/signup.html">
+                <a href="pages/auth/signup.html?role=buyer">
                     Sign Up
                 </a>
 
@@ -652,47 +681,11 @@
             <script src="js/data/data-service.js"></script>
             <script src="js/auth/session.js"></script>
             <script src="js/auth/auth.js"></script>
+            <script src="js/cart/cart.js"></script>
+            <script src="js/cart/cart-ux.js"></script>
+            <script src="js/nav/navigation.js"></script>
             <script src="js/pages/home.js"></script>
             <script src="js/core/app.js"></script>
-            <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    const user = SessionManager.getUser();
-                    if (user) {
-                        const navLogin = document.getElementById("navLogin");
-                        const navSignup = document.getElementById("navSignup");
-                        const navLogout = document.getElementById("navLogout");
-                        const navGreeting = document.getElementById("navGreeting");
-
-                        if (navGreeting) {
-                            navGreeting.textContent = `Hi, ${user.name || "there"}`;
-                            navGreeting.style.display = "inline";
-                        }
-                        if (navLogout) {
-                            navLogout.style.display = "inline-block";
-                        }
-
-                        if (user.role === "seller") {
-                            if (navLogin) {
-                                navLogin.textContent = "Dashboard";
-                                navLogin.href = "pages/seller/dashboard.html";
-                            }
-                            if (navSignup) {
-                                navSignup.textContent = "My Products";
-                                navSignup.href = "pages/seller/products.html";
-                            }
-                        } else {
-                            if (navLogin) {
-                                navLogin.textContent = "My Orders";
-                                navLogin.href = "pages/buyer/orders.html";
-                            }
-                            if (navSignup) {
-                                navSignup.textContent = "Profile";
-                                navSignup.href = "pages/buyer/profile.html";
-                            }
-                        }
-                    }
-                });
-            </script>
 
 </body>
 </html>

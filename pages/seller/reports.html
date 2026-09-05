@@ -17,14 +17,12 @@
                 <span class="brand-mark">A</span>
                 <span class="brand-name">Artisan Studio</span>
             </a>
-            <nav class="main-nav">
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="products.html" class="nav-link">My Products</a>
-                <a href="analytics.html" class="nav-link">Analytics</a>
-                <span class="nav-link active" style="cursor: default; opacity: 0.6;">Reports</span>
-                <a href="../marketplace/marketplace.html" class="nav-link">Marketplace</a>
-                <button class="btn btn-secondary" onclick="AuthController.logout()">Logout</button>
-            </nav>
+            <nav class="main-nav" aria-label="Main navigation"></nav>
+            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -44,6 +42,7 @@
                         <input type="date" id="endDate" class="form-control">
                     </div>
                     <button id="btnFilter" class="btn btn-primary">Filter</button>
+                    <button id="btnResetFilter" class="btn btn-secondary">Reset</button>
                     <button id="btnExportCSV" class="btn btn-secondary">Export CSV</button>
                     <button id="btnExportPDF" class="btn btn-secondary">Print / PDF</button>
                 </div>
@@ -73,6 +72,9 @@
     <script src="../../js/data/data-service.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
+    <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/core/app.js"></script>
     <script src="../../js/reports/reports.js"></script>
     <script src="../../js/reports/excel-report.js"></script>
     <script src="../../js/reports/pdf-report.js"></script>
@@ -119,6 +121,11 @@
             }
 
             document.getElementById("btnFilter").addEventListener("click", render);
+            document.getElementById("btnResetFilter").addEventListener("click", () => {
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+                render();
+            });
             document.getElementById("btnExportCSV").addEventListener("click", () => {
                 ExcelExporter.exportToCSV(`Sales_Report_${seller.id}`, currentData);
             });
