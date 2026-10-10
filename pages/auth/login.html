@@ -54,24 +54,6 @@
     <script src="../../js/data/seed-loader.js"></script>
     <script src="../../js/auth/session.js"></script>
     <script src="../../js/auth/auth.js"></script>
-    <script>
-        document.getElementById("loginForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const alertEl = document.getElementById("authAlert");
-            alertEl.style.display = "none";
-
-            const result = AuthController.login(
-                document.getElementById("email").value,
-                document.getElementById("password").value
-            );
-
-            if (result.success) {
-                AuthController.redirectByRole(result.user);
-            } else {
-                alertEl.textContent = result.message;
-                alertEl.style.display = "block";
-            }
-        });
-    </script>
+    <script src="../../js/pages/auth/login.js"></script>
 </body>
 </html>
