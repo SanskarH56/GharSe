@@ -1,17 +1,22 @@
-document.getElementById("loginForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const alertEl = document.getElementById("authAlert");
-            alertEl.style.display = "none";
+document.addEventListener("DOMContentLoaded", function () {
+    var form = document.getElementById("loginForm");
+    var alertEl = document.getElementById("authAlert");
 
-            const result = AuthController.login(
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        alertEl.style.display = "none";
+
+        try {
+            var data = await AuthService.login(
                 document.getElementById("email").value,
                 document.getElementById("password").value
             );
-
-            if (result.success) {
-                AuthController.redirectByRole(result.user);
-            } else {
-                alertEl.textContent = result.message;
-                alertEl.style.display = "block";
-            }
+            window.location.href = data.role === "SELLER" || data.role === "ADMIN"
+                ? "/pages/seller/dashboard.html"
+                : "/pages/marketplace/marketplace.html";
+        } catch (error) {
+            alertEl.textContent = error.message;
+            alertEl.style.display = "block";
+        }
+    });
 });
