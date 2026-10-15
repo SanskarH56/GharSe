@@ -4,7 +4,14 @@ var AuthService = {
         Auth.setToken(data.token);
         return data;
     },
-    register: function (payload) {
-        return Api.post("/auth/register", payload);
+
+    // Registers the account. If the backend returns a token (AuthResponse),
+    // store it so the user is logged in straight away.
+    register: async function (payload) {
+        var data = await Api.post("/auth/register", payload);
+        if (data && data.token) {
+            Auth.setToken(data.token);
+        }
+        return data;
     }
 };
