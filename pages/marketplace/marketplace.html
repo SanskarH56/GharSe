@@ -1,10 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore Marketplace - Artisan</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/components.css">
     <link rel="stylesheet" href="../../css/responsive.css">
@@ -24,6 +31,7 @@
             </button>
         </div>
     </header>
+
     <main class="section">
         <div class="container">
             <div class="section-heading">
@@ -31,43 +39,65 @@
                 <h2>Explore Marketplace</h2>
                 <p>Discover unique products made by independent women entrepreneurs.</p>
             </div>
-            <!-- Controls: Search, Category, Sort -->
-            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; margin-bottom: 30px;">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search products or craft types...">
-                
-                <select id="categoryFilter" class="form-control">
+
+            <!-- Controls: search, category, sort -->
+            <div class="filter-bar">
+                <input type="search" id="searchInput" class="form-control" placeholder="Search products or craft types..." aria-label="Search products" autocomplete="off">
+
+                <select id="categoryFilter" class="form-control" aria-label="Category">
                     <option value="">All Categories</option>
-                    <option value="Food">Food</option>
-                    <option value="Baked Goods">Baked Goods</option>
-                    <option value="Handicrafts">Handicrafts</option>
-                    <option value="Jewelry">Jewelry</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Home & Decor">Home & Decor</option>
-                    <option value="Beauty">Beauty</option>
-                    <option value="Other">Other</option>
                 </select>
-                <select id="sortFilter" class="form-control">
+
+                <select id="sortFilter" class="form-control" aria-label="Sort products">
+                    <option value="recommended">Sort: Recommended</option>
                     <option value="newest">Sort: Newest</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
                 </select>
             </div>
-            <!-- Dynamic Product Grid -->
-            <div class="product-preview-grid" id="marketplaceGrid">
-                <!-- JavaScript will populate products here -->
+
+            <!-- Controls: price range, near me -->
+            <div class="filter-row">
+                <div class="filter-price">
+                    <input type="number" id="minPrice" class="form-control" min="0" step="1" inputmode="numeric" placeholder="Min &#8377;" aria-label="Minimum price">
+                    <span>to</span>
+                    <input type="number" id="maxPrice" class="form-control" min="0" step="1" inputmode="numeric" placeholder="Max &#8377;" aria-label="Maximum price">
+                </div>
+
+                <button type="button" id="nearMeBtn" class="btn btn-secondary" aria-pressed="false">Near me</button>
+
+                <select id="radiusFilter" class="form-control" aria-label="Search radius" hidden>
+                    <option value="">Any distance</option>
+                    <option value="5">Within 5 km</option>
+                    <option value="10">Within 10 km</option>
+                    <option value="25">Within 25 km</option>
+                    <option value="50">Within 50 km</option>
+                </select>
+
+                <button type="button" id="clearFilters" class="btn btn-secondary">Clear filters</button>
             </div>
+
+            <p id="filterMessage" class="form-error" role="alert" hidden></p>
+            <p id="resultsSummary" class="results-summary" aria-live="polite"></p>
+
+            <!-- Dynamic Product Grid -->
+            <div class="product-preview-grid" id="marketplaceGrid" aria-busy="false">
+                <!-- Populated by js/pages/public/marketplace.js -->
+            </div>
+
+            <nav id="pagination" class="pagination" aria-label="Pagination"></nav>
         </div>
     </main>
+
     <script src="../../js/core/utils.js"></script>
-    <script src="../../js/data/storage.js"></script>
-    <script src="../../js/data/seed-loader.js"></script>
-    <script src="../../js/data/data-service.js"></script>
-    <script src="../../js/auth/session.js"></script>
-    <script src="../../js/auth/auth.js"></script>
-    <script src="../../js/cart/cart.js"></script>
-    <script src="../../js/cart/cart-ux.js"></script>
-    <script src="../../js/nav/navigation.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/services/productService.js"></script>
+    <script src="../../js/toast.js"></script>
+    <script src="../../js/cart-action.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/core/app.js"></script>
-    <script src="../../js/pages/marketplace.js"></script>
+    <script src="../../js/pages/public/marketplace.js"></script>
 </body>
 </html>
