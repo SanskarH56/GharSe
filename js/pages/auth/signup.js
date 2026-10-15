@@ -1,35 +1,63 @@
-document.addEventListener("DOMContentLoaded", () => {
-            const params = new URLSearchParams(window.location.search);
-            const roleParam = params.get("role");
-            if (roleParam === "buyer" || roleParam === "seller") {
-                const radio = document.getElementById(roleParam === "buyer" ? "roleBuyer" : "roleSeller");
-                if (radio) radio.checked = true;
+document.addEventListener("DOMContentLoaded", function () {
+    var form = document.getElementById("signupForm");
+    var alertEl = document.getElementById("authAlert");
+    var submitBtn = form.querySelector('button[type="submit"]');
+
+    // Pre-select the role from ?role=buyer or ?role=seller
+    var roleParam = new URLSearchParams(window.location.search).get("role");
+    if (roleParam === "buyer" || roleParam === "seller") {
+        var radio = document.getElementById(roleParam === "buyer" ? "roleBuyer" : "roleSeller");
+        if (radio) radio.checked = true;
+    }
+
+    function showError(message) {
+        alertEl.textContent = message;
+        alertEl.style.display = "block";
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        alertEl.style.display = "none";
+
+        var roleInput = document.querySelector('input[name="role"]:checked');
+        if (!roleInput) {
+            showError("Please choose whether you want to buy or sell.");
+            return;
+        }
+
+        var phone = document.getElementById("phone").value.trim();
+        var email = document.getElementById("email").value.trim();
+        var password = document.getElementById("password").value;
+
+        var payload = {
+            name: document.getElementById("name").value.trim(),
+            phone: phone,
+            // Send null, not "": the DB has a UNIQUE index on email,
+            // so two blank emails would collide.
+            email: email || null,
+            password: password,
+            role: roleInput.value.toUpperCase()
+        };
+
+        var originalLabel = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating account...";
+
+        try {
+            await AuthService.register(payload);
+
+            // If register did not return a token, log in with the new credentials.
+            if (!Auth.isLoggedIn()) {
+                await AuthService.login(phone, password);
             }
-        });
 
-        document.getElementById("signupForm").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const alertEl = document.getElementById("authAlert");
-            alertEl.style.display = "none";
-
-            const selectedRoleInput = document.querySelector('input[name="role"]:checked');
-            if (!selectedRoleInput) {
-                alertEl.textContent = "Please choose whether you want to buy or sell.";
-                alertEl.style.display = "block";
-                return;
-            }
-
-            const result = AuthController.signup({
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
-                password: document.getElementById("password").value,
-                role: selectedRoleInput.value
-            });
-
-            if (result.success) {
-                AuthController.redirectByRole(result.user);
-            } else {
-                alertEl.textContent = result.message;
-                alertEl.style.display = "block";
-            }
+            // TODO: when seller onboarding exists (POST /v1/seller/profile),
+            // send users who chose "Start Selling" there instead.
+            window.location.href = "../marketplace/marketplace.html";
+        } catch (error) {
+            showError(error.message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel;
+        }
+    });
 });
