@@ -1,0 +1,104 @@
+GharSe-frontend
+├── css
+│   ├── components.css
+│   ├── pages
+│   │   └── home.css
+│   ├── responsive.css
+│   └── style.css
+├── data
+│   ├── buyer_profiles.csv
+│   ├── order_items.csv
+│   ├── orders.csv
+│   ├── products.csv
+│   ├── seller_profiles.csv
+│   ├── transactions.csv
+│   └── users.csv
+├── index.html
+├── js
+│   ├── analytics
+│   │   └── seller-analytics.js
+│   ├── api.js
+│   ├── auth
+│   │   ├── auth.js
+│   │   └── session.js
+│   ├── auth.js
+│   ├── cart
+│   │   ├── cart-ux.js
+│   │   └── cart.js
+│   ├── cart-action.js
+│   ├── config.js
+│   ├── core
+│   │   ├── app.js
+│   │   └── utils.js
+│   ├── data
+│   │   ├── data-service.js
+│   │   ├── seed-loader.js
+│   │   └── storage.js
+│   ├── geo.js
+│   ├── nav
+│   │   └── navigation.js
+│   ├── nav.js
+│   ├── orders
+│   │   └── orders.js
+│   ├── pages
+│   │   ├── admin
+│   │   ├── auth
+│   │   │   ├── login.js
+│   │   │   └── signup.js
+│   │   ├── buyer
+│   │   │   ├── cart.js
+│   │   │   ├── checkout.js
+│   │   │   ├── orders.js
+│   │   │   └── profile.js
+│   │   ├── home.js
+│   │   ├── marketplace.js
+│   │   ├── public
+│   │   │   ├── marketplace.js
+│   │   │   ├── product.js
+│   │   │   ├── seller-store.js
+│   │   │   └── trends.js
+│   │   ├── seller
+│   │   │   ├── analytics.js
+│   │   │   ├── product-form.js
+│   │   │   ├── products.js
+│   │   │   └── reports.js
+│   │   └── seller-dashboard.js
+│   ├── reports
+│   │   ├── excel-report.js
+│   │   ├── pdf-report.js
+│   │   └── reports.js
+│   ├── services
+│   │   ├── authService.js
+│   │   └── productService.js
+│   ├── toast.js
+│   └── ui.js
+├── pages
+│   ├── auth
+│   │   ├── login.html
+│   │   └── signup.html
+│   ├── buyer
+│   │   ├── orders.html
+│   │   └── profile.html
+│   ├── marketplace
+│   │   ├── cart.html
+│   │   ├── checkout.html
+│   │   ├── marketplace.html
+│   │   ├── product.html
+│   │   ├── seller-store.html
+│   │   └── trends.html
+│   └── seller
+│       ├── analytics.html
+│       ├── dashboard.html
+│       ├── product-form.html
+│       ├── products.html
+│       └── reports.html
+├── switch-nav-toast.sh
+└── testing
+    └── seed
+        ├── buyer_profiles.csv
+        ├── order_items.csv
+        ├── orders.csv
+        ├── products.csv
+        ├── seller_profiles.csv
+        ├── transactions.csv
+        └── users.csv

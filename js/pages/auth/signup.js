@@ -25,18 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        var wantsToSell = roleInput.value === "seller";
         var phone = document.getElementById("phone").value.trim();
         var email = document.getElementById("email").value.trim();
         var password = document.getElementById("password").value;
 
+        // No role here: the server decides it. Sellers create their store next.
         var payload = {
             name: document.getElementById("name").value.trim(),
             phone: phone,
             // Send null, not "": the DB has a UNIQUE index on email,
             // so two blank emails would collide.
             email: email || null,
-            password: password,
-            role: roleInput.value.toUpperCase()
+            password: password
         };
 
         var originalLabel = submitBtn.textContent;
@@ -51,9 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 await AuthService.login(phone, password);
             }
 
-            // TODO: when seller onboarding exists (POST /v1/seller/profile),
-            // send users who chose "Start Selling" there instead.
-            window.location.href = "../marketplace/marketplace.html";
+            window.location.href = wantsToSell
+                ? "../seller/onboarding.html"
+                : "../marketplace/marketplace.html";
         } catch (error) {
             showError(error.message);
             submitBtn.disabled = false;
