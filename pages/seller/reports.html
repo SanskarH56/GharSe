@@ -1,10 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction Reports - Artisan</title>
+    <title>PAGE TITLE - Artisan Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="../../css/components.css">
     <link rel="stylesheet" href="../../css/responsive.css">
@@ -18,67 +25,22 @@
                 <span class="brand-name">Artisan Studio</span>
             </a>
             <nav class="main-nav" aria-label="Main navigation"></nav>
-            <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation menu" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
         </div>
     </header>
 
     <main class="section">
         <div class="container">
-            <h2>Transaction Reports</h2>
-            <p style="margin-bottom: 24px; color: var(--color-text-muted);">Generate, filter, and export detailed sales statements.</p>
-
-            <div class="metric-card" style="margin-bottom: 24px;">
-                <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
-                    <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
-                        <label class="form-label" for="startDate">From Date</label>
-                        <input type="date" id="startDate" class="form-control">
-                    </div>
-                    <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
-                        <label class="form-label" for="endDate">To Date</label>
-                        <input type="date" id="endDate" class="form-control">
-                    </div>
-                    <button id="btnFilter" class="btn btn-primary">Filter</button>
-                    <button id="btnResetFilter" class="btn btn-secondary">Reset</button>
-                    <button id="btnExportCSV" class="btn btn-secondary">Export CSV</button>
-                    <button id="btnExportPDF" class="btn btn-secondary">Print / PDF</button>
-                </div>
-            </div>
-
-            <div class="metric-card" id="reportTableArea">
-                <table style="width: 100%; text-align: left; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--color-border); font-size: 0.88rem; color: var(--color-text-muted);">
-                            <th style="padding: 10px;">Order ID</th>
-                            <th style="padding: 10px;">Date</th>
-                            <th style="padding: 10px;">Product</th>
-                            <th style="padding: 10px;">Qty</th>
-                            <th style="padding: 10px;">Payment Method</th>
-                            <th style="padding: 10px;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reportTableBody"></tbody>
-                </table>
+            <div class="metric-card">
+                <h2>PAGE HEADING</h2>
+                <p style="color: var(--color-text-muted);">This section is being built. It will be available soon.</p>
             </div>
         </div>
     </main>
 
-    <script src="../../js/core/utils.js"></script>
-    <script src="../../js/data/storage.js"></script>
-    <script src="../../js/data/seed-loader.js"></script>
-    <script src="../../js/data/data-service.js"></script>
-    <script src="../../js/auth/session.js"></script>
-    <script src="../../js/auth/auth.js"></script>
-    <script src="../../js/cart/cart.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="../../js/api.js"></script>
     <script src="../../js/auth.js"></script>
     <script src="../../js/nav.js"></script>
-    <script src="../../js/core/app.js"></script>
-    <script src="../../js/reports/reports.js"></script>
-    <script src="../../js/reports/excel-report.js"></script>
-    <script src="../../js/reports/pdf-report.js"></script>
-    <script src="../../js/pages/seller/reports.js"></script>
+    <script src="../../js/pages/seller/seller-guard.js"></script>
 </body>
 </html>
